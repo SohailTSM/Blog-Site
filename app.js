@@ -1,11 +1,47 @@
 const express = require('express');
+const mongoose = require('mongoose');
+const blogRoutes = require('./routes/blogRoutes');
 
 const app = express();
 
-app.listen(3000, () => {
-  console.log('listening to request on http://localhost:3000');
+const dbURI =
+  'mongodb+srv://sohailTSM:testing123@cluster0.eqmu8po.mongodb.net/?retryWrites=true&w=majority';
+
+mongoose
+  .connect(dbURI)
+  .then((result) =>
+    app.listen(3000, () => {
+      console.log('listening to request on http://localhost:3000');
+    })
+  )
+  .catch((err) => {
+    console.log(err);
+  });
+
+// register view engine
+app.set('view engine', 'ejs');
+
+// middleware & static files
+app.use(express.static('public'));
+app.use(express.urlencoded({ extended: true }));
+app.use((req, res, next) => {
+  res.locals.path = req.path;
+  next();
 });
 
+// routes
 app.get('/', (req, res) => {
-  res.send('<h1>Home</h1>');
+  res.redirect('/blogs');
+});
+
+app.get('/about', (req, res) => {
+  res.render('about', { title: 'About' });
+});
+
+// blog routes
+app.use('/blogs', blogRoutes);
+
+// 404 page
+app.use((req, res) => {
+  res.status(404).render('404', { title: '404' });
 });
