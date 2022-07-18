@@ -1,14 +1,12 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const blogRoutes = require('./routes/blogRoutes');
+require('dotenv/config');
 
 const app = express();
 
-const dbURI =
-  'mongodb+srv://sohailTSM:testing123@cluster0.eqmu8po.mongodb.net/?retryWrites=true&w=majority';
-
 mongoose
-  .connect(dbURI)
+  .connect(process.env.DB_CONNECTION, { dbName: 'Blog-Site' })
   .then((result) =>
     app.listen(3000, () => {
       console.log('listening to request on http://localhost:3000');
